@@ -71,7 +71,7 @@ class ItemsAdapter(
   }
 
   override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-    holder.bind(items[position], position)
+    holder.bind(items[position])
   }
 
   fun setItems(newItems: List<Item>) {
@@ -99,7 +99,7 @@ class NewItemsAdapter(
   }
 
   override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-    holder.bind(getItem(position), position)
+    holder.bind(getItem(position))
   }
 }
 
@@ -107,9 +107,9 @@ class ItemViewHolder(
   private val binding: ItemBinding,
   private val onItemClick: (Position) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
-  fun bind(item: Item, position: Position) {
+  fun bind(item: Item) {
     binding.textView.text = item.id
-    binding.root.setOnClickListener { onItemClick(position) }
+    binding.root.setOnClickListener { onItemClick(adapterPosition) }
   }
 }
 
@@ -122,6 +122,9 @@ class ItemsViewModel : ViewModel() {
   }
 
   fun clickAt(position: Position) {
-    _items.value = _items.value!! + Item()
+    val currentItems = _items.value!!
+    _items.value = currentItems.subList(0, position) +
+      Item() +
+      currentItems.subList(position, currentItems.size)
   }
 }
