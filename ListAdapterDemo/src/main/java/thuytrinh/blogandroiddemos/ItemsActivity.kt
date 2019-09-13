@@ -10,7 +10,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import thuytrinh.blogandroiddemos.databinding.ActivityItemsBinding
 import thuytrinh.blogandroiddemos.databinding.ItemBinding
@@ -25,14 +27,29 @@ class ItemsActivity : AppCompatActivity() {
       this,
       R.layout.activity_items
     )
+    binding.itemsView.layoutManager = LinearLayoutManager(this)
 
+    // initWithOldWay(binding)
+    initWithNewWay(binding)
+  }
+
+  private fun initWithOldWay(binding: ActivityItemsBinding) {
     val adapter = ItemsAdapter(items = viewModel.items.value!!, onItemClick = {
       viewModel.clickAt(position = it)
     })
-    binding.itemsView.layoutManager = LinearLayoutManager(this)
     binding.itemsView.adapter = adapter
     viewModel.items.observe(this, Observer {
       adapter.setItems(it)
+    })
+  }
+
+  private fun initWithNewWay(binding: ActivityItemsBinding) {
+    val adapter = NewItemsAdapter(onItemClick = {
+      viewModel.clickAt(position = it)
+    })
+    binding.itemsView.adapter = adapter
+    viewModel.items.observe(this, Observer {
+      adapter.submitList(it)
     })
   }
 }
@@ -60,6 +77,29 @@ class ItemsAdapter(
   fun setItems(newItems: List<Item>) {
     items = newItems
     notifyDataSetChanged()
+  }
+}
+
+object ItemCallback : DiffUtil.ItemCallback<Item>() {
+  override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
+    return oldItem == newItem
+  }
+
+  override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
+    return oldItem == newItem
+  }
+}
+
+class NewItemsAdapter(
+  private val onItemClick: (Position) -> Unit
+) : ListAdapter<Item, ItemViewHolder>(ItemCallback) {
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+    val binding = ItemBinding.inflate(LayoutInflater.from(parent.context))
+    return ItemViewHolder(binding = binding, onItemClick = onItemClick)
+  }
+
+  override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+    holder.bind(getItem(position), position)
   }
 }
 
