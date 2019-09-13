@@ -4,14 +4,15 @@
 
   <FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
 
     <TextView
       android:id="@+id/textView"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_gravity="center"
       android:layout_margin="16dp"
+      android:textAppearance="@style/TextAppearance.AppCompat.Medium"
       tools:text="Hey, this is an item :)" />
   </FrameLayout>
 </layout>

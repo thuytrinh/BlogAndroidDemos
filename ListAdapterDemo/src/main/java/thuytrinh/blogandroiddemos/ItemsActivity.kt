@@ -62,7 +62,7 @@ class ItemsAdapter(
   private val onItemClick: (Position) -> Unit
 ) : RecyclerView.Adapter<ItemViewHolder>() {
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-    val binding = ItemBinding.inflate(LayoutInflater.from(parent.context))
+    val binding = ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     return ItemViewHolder(binding = binding, onItemClick = onItemClick)
   }
 
@@ -94,7 +94,7 @@ class NewItemsAdapter(
   private val onItemClick: (Position) -> Unit
 ) : ListAdapter<Item, ItemViewHolder>(ItemCallback) {
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-    val binding = ItemBinding.inflate(LayoutInflater.from(parent.context))
+    val binding = ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     return ItemViewHolder(binding = binding, onItemClick = onItemClick)
   }
 
