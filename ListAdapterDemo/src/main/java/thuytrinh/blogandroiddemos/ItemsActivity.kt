@@ -127,12 +127,8 @@ class ItemViewHolder(
 }
 
 class ItemsViewModel : ViewModel() {
-  private val _items = MutableLiveData(emptyList<Item>())
+  private val _items = MutableLiveData(listOf(Item()))
   val items: LiveData<List<Item>> get() = _items
-
-  init {
-    _items.value = listOf(Item())
-  }
 
   fun clickAt(position: Position) {
     val currentItems = _items.value!!
