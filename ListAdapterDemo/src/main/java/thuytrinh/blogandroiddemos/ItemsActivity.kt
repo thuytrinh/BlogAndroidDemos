@@ -34,7 +34,7 @@ class ItemsActivity : AppCompatActivity() {
   }
 
   private fun initWithOldWay(binding: ActivityItemsBinding) {
-    val adapter = ItemsAdapter(items = viewModel.items.value!!, onItemClick = {
+    val adapter = ItemsAdapter(onItemClick = {
       viewModel.clickAt(position = it)
     })
     binding.itemsView.adapter = adapter
