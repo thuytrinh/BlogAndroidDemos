@@ -80,7 +80,7 @@ class ItemsAdapter(
   }
 }
 
-object ItemCallback : DiffUtil.ItemCallback<Item>() {
+object ItemDiffCallback : DiffUtil.ItemCallback<Item>() {
   override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
     return oldItem == newItem
   }
@@ -90,9 +90,22 @@ object ItemCallback : DiffUtil.ItemCallback<Item>() {
   }
 }
 
+/** T should be a data class. */
+fun <T> equatableDiffCallbacks(): DiffUtil.ItemCallback<T> {
+  return object : DiffUtil.ItemCallback<T>() {
+    override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
+      return oldItem == newItem
+    }
+
+    override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
+      return oldItem == newItem
+    }
+  }
+}
+
 class NewItemsAdapter(
   private val onItemClick: (Position) -> Unit
-) : ListAdapter<Item, ItemViewHolder>(ItemCallback) {
+) : ListAdapter<Item, ItemViewHolder>(equatableDiffCallbacks<Item>()) {
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
     val binding = ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     return ItemViewHolder(binding = binding, onItemClick = onItemClick)
