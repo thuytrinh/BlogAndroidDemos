@@ -12,15 +12,9 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.contains
 
-class FlowTest {
+class HotStreamTest {
   @Test
   fun `should work with callbackFlow`() = runBlockingTest {
-    fun asFlow(broadcastManager: LocalBroadcastManager): Flow<Int> = callbackFlow {
-      val receiver: BroadcastReceiver = { offer(it) }
-      broadcastManager.registerReceiver(receiver)
-      awaitClose { broadcastManager.unregisterReceiver(receiver) }
-    }
-
     repeat(10_000) {
       val broadcastManager = LocalBroadcastManager()
       val values = mutableListOf<Int>()
@@ -49,6 +43,7 @@ class FlowTest {
       launch {
         publisher.asFlow().collect { values.add(it) }
       }
+
       publisher.offer(1)
       expectThat(values).contains(0, 1)
 
@@ -63,7 +58,7 @@ class FlowTest {
 typealias BroadcastReceiver = (Int) -> Unit
 typealias Intent = Int
 
-internal class LocalBroadcastManager {
+class LocalBroadcastManager {
   private val receivers = mutableSetOf<BroadcastReceiver>()
 
   fun sendBroadcast(intent: Intent) {
@@ -77,4 +72,10 @@ internal class LocalBroadcastManager {
   fun unregisterReceiver(receiver: BroadcastReceiver) {
     receivers.remove(receiver)
   }
+}
+
+fun asFlow(broadcastManager: LocalBroadcastManager): Flow<Int> = callbackFlow {
+  val receiver: BroadcastReceiver = { offer(it) }
+  broadcastManager.registerReceiver(receiver)
+  awaitClose { broadcastManager.unregisterReceiver(receiver) }
 }
