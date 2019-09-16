@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.contains
+import strikt.assertions.isEqualTo
 
 class HotStreamTest {
   @Test
@@ -40,15 +41,19 @@ class HotStreamTest {
     repeat(10_000) {
       val publisher = ConflatedBroadcastChannel(0)
       val values = mutableListOf<Int>()
+
       val job = launch {
         publisher.asFlow().collect { values.add(it) }
       }
+      expectThat(publisher.value).isEqualTo(0)
 
       publisher.offer(1)
       expectThat(values).contains(0, 1)
+      expectThat(publisher.value).isEqualTo(1)
 
       publisher.offer(2)
       expectThat(values).contains(0, 1, 2)
+      expectThat(publisher.value).isEqualTo(2)
 
       job.cancel()
     }
