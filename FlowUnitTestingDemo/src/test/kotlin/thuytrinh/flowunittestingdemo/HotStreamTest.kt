@@ -40,7 +40,7 @@ class HotStreamTest {
     repeat(10_000) {
       val publisher = ConflatedBroadcastChannel(0)
       val values = mutableListOf<Int>()
-      launch {
+      val job = launch {
         publisher.asFlow().collect { values.add(it) }
       }
 
@@ -50,7 +50,7 @@ class HotStreamTest {
       publisher.offer(2)
       expectThat(values).contains(0, 1, 2)
 
-      publisher.close()
+      job.cancel()
     }
   }
 }
