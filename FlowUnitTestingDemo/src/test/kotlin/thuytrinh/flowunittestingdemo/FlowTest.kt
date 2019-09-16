@@ -1,13 +1,12 @@
 package thuytrinh.flowunittestingdemo
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
@@ -15,72 +14,67 @@ import strikt.assertions.contains
 
 class FlowTest {
   @Test
-  fun `launch with GlobalScope`() {
-    GlobalScope.launch {
-      flowOf(0, 1, 2, 3).collect { println(it) }
+  fun `should work with callbackFlow`() = runBlockingTest {
+    fun asFlow(broadcastManager: LocalBroadcastManager): Flow<Int> = callbackFlow {
+      val receiver: BroadcastReceiver = { offer(it) }
+      broadcastManager.registerReceiver(receiver)
+      awaitClose { broadcastManager.unregisterReceiver(receiver) }
     }
-    println("Done.")
-  }
 
-  @Test
-  fun `launch with runBlockingTest`() {
-    runBlockingTest {
-      flowOf(0, 1, 2, 3).collect { println(it) }
-    }
-    println("Done.")
-  }
-
-  @Test
-  fun `should work with callbackFlow`() {
-    fun toFlow(api: CallbackApi): Flow<String> = callbackFlow {
-      api.callback = {
-        offer(it)
+    repeat(10_000) {
+      val broadcastManager = LocalBroadcastManager()
+      val values = mutableListOf<Int>()
+      val job = launch {
+        asFlow(broadcastManager).collect { values.add(it) }
       }
 
-      awaitClose { api.callback = {} }
-    }
+      broadcastManager.sendBroadcast(0)
+      expectThat(values).contains(0)
 
-    repeat(1_000_000) {
-      val api = CallbackApi()
-      val testCollector = toFlow(api).test()
+      broadcastManager.sendBroadcast(1)
+      expectThat(values).contains(0, 1)
 
-      api(0)
-      testCollector.assertValues("0")
+      broadcastManager.sendBroadcast(2)
+      expectThat(values).contains(0, 1, 2)
 
-      api(1)
-      testCollector.assertValues("0", "1")
-
-      api(2)
-      testCollector.assertValues("0", "1", "2")
+      job.cancel()
     }
   }
-}
 
-internal class CallbackApi {
-  var callback: (String) -> Unit = {}
+  @Test
+  fun `should work with ConflatedBroadcastChannel`() = runBlockingTest {
+    repeat(10_000) {
+      val publisher = ConflatedBroadcastChannel(0)
+      val values = mutableListOf<Int>()
+      launch {
+        publisher.asFlow().collect { values.add(it) }
+      }
+      publisher.offer(1)
+      expectThat(values).contains(0, 1)
 
-  operator fun invoke(value: Int) {
-    callback(value.toString())
+      publisher.offer(2)
+      expectThat(values).contains(0, 1, 2)
+
+      publisher.close()
+    }
   }
 }
 
-internal class TestCollector<T> {
-  private val values = mutableListOf<T>()
+typealias BroadcastReceiver = (Int) -> Unit
+typealias Intent = Int
 
-  fun collect(value: T) {
-    values.add(value)
+internal class LocalBroadcastManager {
+  private val receivers = mutableSetOf<BroadcastReceiver>()
+
+  fun sendBroadcast(intent: Intent) {
+    receivers.forEach { it(intent) }
   }
 
-  fun assertValues(vararg _values: T) {
-    expectThat(values).contains(_values.toList())
+  fun registerReceiver(receiver: BroadcastReceiver) {
+    receivers.add(receiver)
   }
-}
 
-internal fun <T> Flow<T>.test(): TestCollector<T> {
-  val flow = this
-  val testCollector = TestCollector<T>()
-  TestCoroutineScope().launch {
-    flow.collect { testCollector.collect(it) }
+  fun unregisterReceiver(receiver: BroadcastReceiver) {
+    receivers.remove(receiver)
   }
-  return testCollector
 }
