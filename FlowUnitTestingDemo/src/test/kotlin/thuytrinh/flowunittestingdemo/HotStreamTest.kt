@@ -1,5 +1,6 @@
 package thuytrinh.flowunittestingdemo
 
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +15,17 @@ import strikt.assertions.contains
 import strikt.assertions.isEqualTo
 
 class HotStreamTest {
+  @Test
+  fun `should receive values from BehaviorSubject`() {
+    val publisher = BehaviorSubject.createDefault(0)
+    val observer = publisher.test()
+
+    publisher.onNext(1)
+    publisher.onNext(2)
+
+    observer.assertValues(0, 1, 2)
+  }
+
   @Test
   fun `should work with callbackFlow`() = runBlockingTest {
     repeat(10_000) {
