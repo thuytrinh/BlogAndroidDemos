@@ -32,7 +32,7 @@ class HotStreamTest {
       val broadcastManager = LocalBroadcastManager()
       val values = mutableListOf<Int>()
       val job = launch {
-        asFlow(broadcastManager).collect { values.add(it) }
+        broadcastManager.asFlow().collect { values.add(it) }
       }
 
       broadcastManager.sendBroadcast(0)
@@ -91,8 +91,8 @@ class LocalBroadcastManager {
   }
 }
 
-fun asFlow(broadcastManager: LocalBroadcastManager): Flow<Int> = callbackFlow {
+fun LocalBroadcastManager.asFlow(): Flow<Int> = callbackFlow {
   val receiver: BroadcastReceiver = { offer(it) }
-  broadcastManager.registerReceiver(receiver)
-  awaitClose { broadcastManager.unregisterReceiver(receiver) }
+  registerReceiver(receiver)
+  awaitClose { unregisterReceiver(receiver) }
 }
