@@ -2,6 +2,8 @@ package thuytrinh.flowunittestingdemo
 
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +45,24 @@ class HotStreamTest {
 
     broadcastManager.sendBroadcast(2)
     expectThat(values).contains(0, 1, 2)
+
+    job.cancel()
+  }
+
+  @Test
+  fun `should work with TestCollector`() = runBlockingTest {
+    val broadcastManager = LocalBroadcastManager()
+    val collector = TestCollector<Intent>()
+    val job = collector.test(this, broadcastManager.asFlow())
+
+    broadcastManager.sendBroadcast(0)
+    collector.assertValues(0)
+
+    broadcastManager.sendBroadcast(1)
+    collector.assertValues(0, 1)
+
+    broadcastManager.sendBroadcast(2)
+    collector.assertValues(0, 1, 2)
 
     job.cancel()
   }
@@ -92,4 +112,16 @@ fun LocalBroadcastManager.asFlow(): Flow<Intent> = callbackFlow {
   val receiver: BroadcastReceiver = { offer(it) }
   registerReceiver(receiver)
   awaitClose { unregisterReceiver(receiver) }
+}
+
+class TestCollector<T> {
+  private val values = mutableListOf<T>()
+
+  fun test(scope: CoroutineScope, flow: Flow<T>): Job {
+    return scope.launch { flow.collect { values.add(it) } }
+  }
+
+  fun assertValues(vararg _values: T) {
+    expectThat(values).contains(_values.toList())
+  }
 }
