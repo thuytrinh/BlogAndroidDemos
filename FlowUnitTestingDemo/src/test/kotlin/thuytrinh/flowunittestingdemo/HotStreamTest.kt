@@ -88,7 +88,7 @@ class LocalBroadcastManager {
   }
 }
 
-fun LocalBroadcastManager.asFlow(): Flow<Int> = callbackFlow {
+fun LocalBroadcastManager.asFlow(): Flow<Intent> = callbackFlow {
   val receiver: BroadcastReceiver = { offer(it) }
   registerReceiver(receiver)
   awaitClose { unregisterReceiver(receiver) }
