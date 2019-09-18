@@ -1,5 +1,6 @@
 package thuytrinh.flowunittestingdemo
 
+import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.awaitClose
@@ -18,7 +19,7 @@ class HotStreamTest {
   @Test
   fun `should receive values from BehaviorSubject`() {
     val publisher = BehaviorSubject.createDefault(0)
-    val observer = publisher.test()
+    val observer: TestObserver<Int> = publisher.test()
 
     publisher.onNext(1)
     publisher.onNext(2)
