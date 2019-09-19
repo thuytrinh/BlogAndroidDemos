@@ -1,2 +1,3 @@
+include ":GpxAnimator"
 include ":FlowUnitTestingDemo"
 include ":ListAdapterDemo"
