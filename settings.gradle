@@ -1,3 +1,4 @@
 include ":GpxAnimator"
 include ":FlowUnitTestingDemo"
 include ":ListAdapterDemo"
+include ":WheelPager"
