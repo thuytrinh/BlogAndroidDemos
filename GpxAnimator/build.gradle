@@ -1,0 +1,48 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+
+android {
+  compileSdkVersion 29
+
+  defaultConfig {
+    applicationId "thuytrinh.gpxanimator"
+    minSdkVersion 28
+    targetSdkVersion 29
+    versionCode 1
+    versionName "1.0"
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile("proguard-android-optimize.txt")
+    }
+  }
+
+  dataBinding {
+    enabled = true
+  }
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+  implementation "androidx.appcompat:appcompat:1.1.0"
+  implementation "androidx.core:core-ktx:1.1.0"
+  implementation "androidx.fragment:fragment-ktx:1.1.0"
+  implementation "androidx.lifecycle:lifecycle-extensions:2.1.0"
+  implementation "com.google.android.gms:play-services-maps:17.0.0"
+  implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:8.3.0"
+  implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v8:0.7.0"
+  implementation "io.jenetics:jpx:1.5.3"
+  implementation "stax:stax-api:1.0.1"
+  implementation "com.fasterxml:aalto-xml:1.1.1"
+}
