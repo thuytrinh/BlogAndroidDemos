@@ -1,1 +1,3 @@
 # GpxAnimator
+
+![](gpx-animator.gif)
