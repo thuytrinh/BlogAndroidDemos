@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.recyclerview.widget.RecyclerView
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
@@ -22,10 +24,11 @@ class MainActivity : AppCompatActivity() {
       this,
       R.layout.activity_main
     )
+    val viewModel = WeekPagerViewModel()
+    binding.viewModel = viewModel
+    binding.lifecycleOwner = this
 
-    val weekAdapter = WeekAdapter { date ->
-      binding.toolbar.title = date.asText()
-    }
+    val weekAdapter = WeekAdapter { viewModel.selectedDate.value = it }
     binding.weekPager.apply {
       adapter = weekAdapter
       setCurrentItem(weekAdapter.currentWeekPosition, false)
@@ -75,6 +78,11 @@ class WeekAdapter(
 }
 
 class WeekViewHolder(val binding: WeekBinding) : RecyclerView.ViewHolder(binding.root)
+
+class WeekPagerViewModel {
+  val selectedDate = MutableLiveData<LocalDate>()
+  val selectedDateText = selectedDate.map { it.asText() }
+}
 
 class WeekViewModel(
   private val getNow: () -> LocalDate,
