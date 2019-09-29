@@ -1,4 +1,4 @@
-package thuytrinh.weekpager2
+package thuytrinh.wheelpager
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

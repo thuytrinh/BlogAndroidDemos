@@ -1,4 +1,4 @@
-package thuytrinh.weekpager2
+package thuytrinh.wheelpager
 
 import android.graphics.Color
 import android.view.View

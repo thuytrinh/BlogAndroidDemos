@@ -1,4 +1,4 @@
-package thuytrinh.weekpager2
+package thuytrinh.wheelpager
 
 import android.os.Bundle
 import android.util.Log
