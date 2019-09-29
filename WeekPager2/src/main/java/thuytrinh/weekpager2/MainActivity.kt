@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
@@ -15,9 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.WeekFields
-import thuytrinh.weekpager2.IsSelected.NoDueToBinding
-import thuytrinh.weekpager2.IsSelected.YesDueToBinding
-import thuytrinh.weekpager2.IsSelected.YesDueToUserClick
 import thuytrinh.weekpager2.databinding.ActivityMainBinding
 import thuytrinh.weekpager2.databinding.WeekBinding
 import java.util.Locale
@@ -102,25 +98,19 @@ class WeekViewHolder(
 
 @BindingAdapter("isSelected")
 fun ImageView.setIsSelected(isSelected: IsSelected) {
-  when (isSelected) {
-    NoDueToBinding -> setBackgroundColor(
-      ContextCompat.getColor(
-        context,
-        android.R.color.transparent
-      )
-    )
-    YesDueToBinding -> setBackgroundColor(
-      ContextCompat.getColor(
-        context,
-        R.color.colorAccent
-      )
-    )
-    YesDueToUserClick -> setBackgroundColor(
-      ContextCompat.getColor(
-        context,
-        R.color.colorAccent
-      )
-    )
+  setBackgroundResource(R.drawable.circle)
+  if (isSelected.value) {
+    if (isSelected.hasAnimation) {
+      animate().alpha(1f)
+    } else {
+      alpha = 1f
+    }
+  } else {
+    if (isSelected.hasAnimation) {
+      animate().alpha(0f)
+    } else {
+      alpha = 0f
+    }
   }
 }
 
@@ -140,11 +130,10 @@ class WeekPagerViewModel {
   }
 }
 
-enum class IsSelected {
-  NoDueToBinding,
-  YesDueToBinding,
-  YesDueToUserClick
-}
+data class IsSelected(
+  val value: Boolean,
+  val hasAnimation: Boolean = false
+)
 
 data class DateViewModel(
   val dayOfWeek: String,
@@ -180,8 +169,8 @@ class WeekViewModel(
           dayOfWeek = dates[i].dayOfWeek.name.take(3),
           dayOfMonth = dates[i].dayOfMonth.toString(),
           isSelected = when {
-            dates[i].isEqual(getSelectedDate()) -> YesDueToBinding
-            else -> NoDueToBinding
+            dates[i].isEqual(getSelectedDate()) -> IsSelected(value = true)
+            else -> IsSelected(value = false)
           }
         )
       )
@@ -193,12 +182,21 @@ class WeekViewModel(
     onDateClick(dates[dateIndex])
     dateViewModels.forEachIndexed { i, field ->
       field.set(
-        field.get()?.copy(
-          isSelected = when {
-            dates[i].isEqual(getSelectedDate()) -> YesDueToBinding
-            else -> NoDueToBinding
+        field.get()?.run {
+          val newIsSelected = when {
+            dates[i].isEqual(getSelectedDate()) -> IsSelected(value = true, hasAnimation = true)
+            else -> if (isSelected.value) {
+              IsSelected(value = false, hasAnimation = true)
+            } else {
+              IsSelected(value = false)
+            }
           }
-        )
+          if (newIsSelected.value != isSelected.value) {
+            copy(isSelected = newIsSelected)
+          } else {
+            this
+          }
+        }
       )
     }
   }
