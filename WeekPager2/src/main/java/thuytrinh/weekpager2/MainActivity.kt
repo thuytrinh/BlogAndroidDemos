@@ -23,50 +23,54 @@ class MainActivity : AppCompatActivity() {
       R.layout.activity_main
     )
 
-    val weekCount = Int.MAX_VALUE
-    val currentWeekPosition = weekCount / 2
-    val now = LocalDate.now()
-    val weekAdapter = object : RecyclerView.Adapter<WeekViewHolder>() {
-      override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekViewHolder {
-        return WeekViewHolder(
-          binding = WeekBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-          ).apply {
-            viewModel = WeekViewModel(
-              getNow = { now },
-              getCurrentWeekPosition = { currentWeekPosition },
-              getLocale = { Locale.GERMANY },
-              onDateClick = { date ->
-                binding.toolbar.title = date.asText()
-              }
-            )
-          }
-        )
-      }
-
-      override fun getItemCount(): Int {
-        return weekCount
-      }
-
-      override fun onBindViewHolder(holder: WeekViewHolder, position: Int) {
-        holder.binding.viewModel?.setWeekPosition(position)
-      }
+    val weekAdapter = WeekAdapter { date ->
+      binding.toolbar.title = date.asText()
     }
     binding.weekPager.apply {
       adapter = weekAdapter
-      setCurrentItem(currentWeekPosition, false)
+      setCurrentItem(weekAdapter.currentWeekPosition, false)
     }
 
     binding.toolbar.apply {
-      title = now.asText()
       inflateMenu(R.menu.main)
       setOnMenuItemClickListener {
-        binding.weekPager.currentItem = currentWeekPosition
+        binding.weekPager.currentItem = weekAdapter.currentWeekPosition
         true
       }
     }
+  }
+}
+
+class WeekAdapter(
+  private val onDateClick: (LocalDate) -> Unit
+) : RecyclerView.Adapter<WeekViewHolder>() {
+  private val weekCount = Int.MAX_VALUE
+  private val now = LocalDate.now()
+  val currentWeekPosition = weekCount / 2
+
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekViewHolder {
+    return WeekViewHolder(
+      binding = WeekBinding.inflate(
+        LayoutInflater.from(parent.context),
+        parent,
+        false
+      ).apply {
+        viewModel = WeekViewModel(
+          getNow = { now },
+          getCurrentWeekPosition = { currentWeekPosition },
+          getLocale = { Locale.GERMANY },
+          onDateClick = onDateClick
+        )
+      }
+    )
+  }
+
+  override fun getItemCount(): Int {
+    return weekCount
+  }
+
+  override fun onBindViewHolder(holder: WeekViewHolder, position: Int) {
+    holder.binding.viewModel?.setWeekPosition(position)
   }
 }
 
