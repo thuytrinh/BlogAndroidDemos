@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <variable
+      name="viewModel"
+      type="thuytrinh.weekpager2.DateViewModel" />
+  </data>
+
+  <LinearLayout
+    android:id="@+id/day0"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:showIn="@layout/week">
+
+    <TextView
+      android:id="@+id/dayOfWeek0"
+      style="@style/dayOfWeekTextStyle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@{viewModel.dayOfWeek}"
+      tools:text="M" />
+
+    <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+      <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        app:isSelected="@{viewModel.isSelected}" />
+
+      <TextView
+        android:id="@+id/dayOfMonth0"
+        style="@style/dayOfMonthTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@{viewModel.dayOfMonth}"
+        tools:text="16" />
+    </FrameLayout>
+  </LinearLayout>
+</layout>

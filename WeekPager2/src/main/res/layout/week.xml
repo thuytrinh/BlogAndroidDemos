@@ -18,176 +18,43 @@
     <androidx.constraintlayout.helper.widget.Flow
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      app:constraint_referenced_ids="day0,day1,day2,day3,day4,day5,day6"
+      app:constraint_referenced_ids="date0,date1,date2,date3,date4,date5,date6"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-      android:id="@+id/day0"
-      android:layout_width="0dp"
-      android:layout_height="match_parent"
-      android:onClick="@{() -> viewModel.onClick(0)}"
-      android:orientation="vertical">
+    <include
+      android:id="@+id/date0"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[0]}" />
 
-      <TextView
-        android:id="@+id/dayOfWeek0"
-        style="@style/dayOfWeekTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@{viewModel.daysOfWeek[0]}"
-        tools:text="M" />
+    <include
+      android:id="@+id/date1"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[1]}" />
 
-      <TextView
-        android:id="@+id/dayOfMonth0"
-        style="@style/dayOfMonthTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@{viewModel.daysOfMonth[0]}"
-        tools:text="16" />
-    </LinearLayout>
+    <include
+      android:id="@+id/date2"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[2]}" />
 
-    <LinearLayout
-      android:id="@+id/day1"
-      android:layout_width="0dp"
-      android:layout_height="match_parent"
-      android:onClick="@{() -> viewModel.onClick(1)}"
-      android:orientation="vertical">
+    <include
+      android:id="@+id/date3"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[3]}" />
 
-      <TextView
-        android:id="@+id/dayOfWeek1"
-        style="@style/dayOfWeekTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@{viewModel.daysOfWeek[1]}"
-        tools:text="T" />
+    <include
+      android:id="@+id/date4"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[4]}" />
 
-      <TextView
-        android:id="@+id/dayOfMonth1"
-        style="@style/dayOfMonthTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@{viewModel.daysOfMonth[1]}"
-        tools:text="17" />
-    </LinearLayout>
+    <include
+      android:id="@+id/date5"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[5]}" />
 
-    <LinearLayout
-      android:id="@+id/day2"
-      android:layout_width="0dp"
-      android:layout_height="match_parent"
-      android:onClick="@{() -> viewModel.onClick(2)}"
-      android:orientation="vertical">
-
-      <TextView
-        android:id="@+id/dayOfWeek2"
-        style="@style/dayOfWeekTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@{viewModel.daysOfWeek[2]}"
-        tools:text="W" />
-
-      <TextView
-        android:id="@+id/dayOfMonth2"
-        style="@style/dayOfMonthTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@{viewModel.daysOfMonth[2]}"
-        tools:text="18" />
-    </LinearLayout>
-
-    <LinearLayout
-      android:id="@+id/day3"
-      android:layout_width="0dp"
-      android:layout_height="match_parent"
-      android:onClick="@{() -> viewModel.onClick(3)}"
-      android:orientation="vertical">
-
-      <TextView
-        android:id="@+id/dayOfWeek3"
-        style="@style/dayOfWeekTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@{viewModel.daysOfWeek[3]}"
-        tools:text="T" />
-
-      <TextView
-        android:id="@+id/dayOfMonth3"
-        style="@style/dayOfMonthTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@{viewModel.daysOfMonth[3]}"
-        tools:text="19" />
-    </LinearLayout>
-
-    <LinearLayout
-      android:id="@+id/day4"
-      android:layout_width="0dp"
-      android:layout_height="match_parent"
-      android:onClick="@{() -> viewModel.onClick(4)}"
-      android:orientation="vertical">
-
-      <TextView
-        android:id="@+id/dayOfWeek4"
-        style="@style/dayOfWeekTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@{viewModel.daysOfWeek[4]}"
-        tools:text="F" />
-
-      <TextView
-        android:id="@+id/dayOfMonth4"
-        style="@style/dayOfMonthTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@{viewModel.daysOfMonth[4]}"
-        tools:text="20" />
-    </LinearLayout>
-
-    <LinearLayout
-      android:id="@+id/day5"
-      android:layout_width="0dp"
-      android:layout_height="match_parent"
-      android:onClick="@{() -> viewModel.onClick(5)}"
-      android:orientation="vertical">
-
-      <TextView
-        android:id="@+id/dayOfWeek5"
-        style="@style/dayOfWeekTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@{viewModel.daysOfWeek[5]}"
-        tools:text="S" />
-
-      <TextView
-        android:id="@+id/dayOfMonth5"
-        style="@style/dayOfMonthTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@{viewModel.daysOfMonth[5]}"
-        tools:text="21" />
-    </LinearLayout>
-
-    <LinearLayout
-      android:id="@+id/day6"
-      android:layout_width="0dp"
-      android:layout_height="match_parent"
-      android:onClick="@{() -> viewModel.onClick(6)}"
-      android:orientation="vertical">
-
-      <TextView
-        android:id="@+id/dayOfWeek6"
-        style="@style/dayOfWeekTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@{viewModel.daysOfWeek[6]}"
-        tools:text="S" />
-
-      <TextView
-        android:id="@+id/dayOfMonth6"
-        style="@style/dayOfMonthTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@{viewModel.daysOfMonth[6]}"
-        tools:text="22" />
-    </LinearLayout>
+    <include
+      android:id="@+id/date6"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[6]}" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
