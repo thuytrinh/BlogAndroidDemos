@@ -79,6 +79,13 @@ class WeekPagerViewModel {
 
   val selectedDate = MutableLiveData<LocalDate>()
   val selectedDateText = selectedDate.map { it.asText() }
+
+  private val germanDateFormatter = DateTimeFormatter
+    .ofPattern("dd.MM.yyyy", Locale.GERMANY)
+
+  private fun LocalDate.asText(): String {
+    return germanDateFormatter.format(this)
+  }
 }
 
 class WeekViewModel(
@@ -113,11 +120,4 @@ class WeekViewModel(
   fun onClick(dateIndex: Int) {
     onDateClick(dates[dateIndex])
   }
-}
-
-private val germanDateFormatter = DateTimeFormatter
-  .ofPattern("dd.MM.yyyy", Locale.GERMANY)
-
-fun LocalDate.asText(): String {
-  return germanDateFormatter.format(this)
 }
