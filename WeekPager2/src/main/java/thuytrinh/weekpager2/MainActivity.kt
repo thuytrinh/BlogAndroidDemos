@@ -27,30 +27,23 @@ class MainActivity : AppCompatActivity() {
     val viewModel = WeekPagerViewModel()
     binding.viewModel = viewModel
     binding.lifecycleOwner = this
-
-    val weekAdapter = WeekAdapter { viewModel.selectedDate.value = it }
     binding.weekPager.apply {
-      adapter = weekAdapter
-      setCurrentItem(weekAdapter.currentWeekPosition, false)
+      adapter = WeekPagerAdapter(viewModel)
+      setCurrentItem(viewModel.currentWeekPosition, false)
     }
-
     binding.toolbar.apply {
       inflateMenu(R.menu.main)
       setOnMenuItemClickListener {
-        binding.weekPager.currentItem = weekAdapter.currentWeekPosition
+        binding.weekPager.currentItem = viewModel.currentWeekPosition
         true
       }
     }
   }
 }
 
-class WeekAdapter(
-  private val onDateClick: (LocalDate) -> Unit
+class WeekPagerAdapter(
+  private val weekPagerViewModel: WeekPagerViewModel
 ) : RecyclerView.Adapter<WeekViewHolder>() {
-  private val weekCount = Int.MAX_VALUE
-  private val now = LocalDate.now()
-  val currentWeekPosition = weekCount / 2
-
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekViewHolder {
     return WeekViewHolder(
       binding = WeekBinding.inflate(
@@ -59,17 +52,17 @@ class WeekAdapter(
         false
       ).apply {
         viewModel = WeekViewModel(
-          getNow = { now },
-          getCurrentWeekPosition = { currentWeekPosition },
+          getNow = { weekPagerViewModel.now },
+          getCurrentWeekPosition = { weekPagerViewModel.currentWeekPosition },
           getLocale = { Locale.GERMANY },
-          onDateClick = onDateClick
+          onDateClick = { weekPagerViewModel.selectedDate.value = it }
         )
       }
     )
   }
 
   override fun getItemCount(): Int {
-    return weekCount
+    return weekPagerViewModel.weekCount
   }
 
   override fun onBindViewHolder(holder: WeekViewHolder, position: Int) {
@@ -80,6 +73,10 @@ class WeekAdapter(
 class WeekViewHolder(val binding: WeekBinding) : RecyclerView.ViewHolder(binding.root)
 
 class WeekPagerViewModel {
+  val weekCount = Int.MAX_VALUE
+  val now: LocalDate = LocalDate.now()
+  val currentWeekPosition = weekCount / 2
+
   val selectedDate = MutableLiveData<LocalDate>()
   val selectedDateText = selectedDate.map { it.asText() }
 }
