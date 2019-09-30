@@ -1,17 +1,14 @@
 package thuytrinh.weekpager2
 
-import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.RecyclerView
 import org.threeten.bp.LocalDate
@@ -32,10 +29,13 @@ class MainActivity : AppCompatActivity() {
     val viewModel = WeekPagerViewModel()
     binding.viewModel = viewModel
     binding.lifecycleOwner = this
+
+    val weekPagerAdapter = WeekPagerAdapter(viewModel, this)
     binding.weekPager.apply {
-      adapter = WeekPagerAdapter(viewModel)
+      adapter = weekPagerAdapter
       setCurrentItem(viewModel.currentWeekPosition, false)
     }
+
     binding.toolbar.apply {
       inflateMenu(R.menu.main)
       setOnMenuItemClickListener {
@@ -47,28 +47,27 @@ class MainActivity : AppCompatActivity() {
 }
 
 class WeekPagerAdapter(
-  private val weekPagerViewModel: WeekPagerViewModel
+  private val weekPagerViewModel: WeekPagerViewModel,
+  private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<WeekViewHolder>() {
-  private var selectedWeekViewModel: WeekViewModel? = null
-
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekViewHolder {
+    val viewModel = WeekViewModel(
+      getNow = { weekPagerViewModel.now },
+      getCurrentWeekPosition = { weekPagerViewModel.currentWeekPosition },
+      getLocale = { Locale.GERMANY },
+      onDateClick = { weekPagerViewModel.selectedDate.value = it },
+      getSelectedDate = { weekPagerViewModel.selectedDate.value }
+    )
+    weekPagerViewModel.selectedDate.observe(lifecycleOwner, Observer {
+      viewModel.refreshSelection()
+    })
     return WeekViewHolder(
       weekBinding = WeekBinding.inflate(
         LayoutInflater.from(parent.context),
         parent,
         false
       ),
-      viewModel = WeekViewModel(
-        getNow = { weekPagerViewModel.now },
-        getCurrentWeekPosition = { weekPagerViewModel.currentWeekPosition },
-        getLocale = { Locale.GERMANY },
-        onDateClick = { date ->
-          weekPagerViewModel.selectedDate.value = date
-          selectedWeekViewModel?.refreshSelection()
-        },
-        getSelectedDate = { weekPagerViewModel.selectedDate.value },
-        onSelected = { selectedWeekViewModel = it }
-      )
+      viewModel = viewModel
     )
   }
 
@@ -105,57 +104,6 @@ class WeekViewHolder(
   }
 }
 
-@BindingAdapter("isSelected")
-fun ImageView.setIsSelected(isSelected: IsSelected) {
-  setBackgroundResource(R.drawable.circle)
-  if (isSelected.value) {
-    if (isSelected.hasAnimation) {
-      animate().alpha(1f)
-    } else {
-      alpha = 1f
-    }
-  } else {
-    if (isSelected.hasAnimation) {
-      animate().alpha(0f)
-    } else {
-      alpha = 0f
-    }
-  }
-}
-
-@BindingAdapter("isSelected")
-fun TextView.setIsSelected(isSelected: IsSelected) {
-  if (isSelected.value) {
-    if (isSelected.hasAnimation) {
-      ValueAnimator.ofArgb(
-        ContextCompat.getColor(context, android.R.color.black),
-        ContextCompat.getColor(context, android.R.color.white)
-      ).apply {
-        addUpdateListener {
-          setTextColor(it.animatedValue as Int)
-        }
-        start()
-      }
-    } else {
-      setTextColor(ContextCompat.getColor(context, android.R.color.white))
-    }
-  } else {
-    if (isSelected.hasAnimation) {
-      ValueAnimator.ofArgb(
-        ContextCompat.getColor(context, android.R.color.white),
-        ContextCompat.getColor(context, android.R.color.black)
-      ).apply {
-        addUpdateListener {
-          setTextColor(it.animatedValue as Int)
-        }
-        start()
-      }
-    } else {
-      setTextColor(ContextCompat.getColor(context, android.R.color.black))
-    }
-  }
-}
-
 class WeekPagerViewModel {
   val weekCount = Int.MAX_VALUE
   val now: LocalDate = LocalDate.now()
@@ -188,8 +136,7 @@ class WeekViewModel(
   private val getCurrentWeekPosition: () -> Int,
   private val getLocale: () -> Locale = { Locale.getDefault() },
   private val onDateClick: (LocalDate) -> Unit,
-  private val getSelectedDate: () -> LocalDate?,
-  private val onSelected: (WeekViewModel) -> Unit
+  private val getSelectedDate: () -> LocalDate?
 ) {
   private var dates = emptyList<LocalDate>()
   private val dateIndices = (0L..6L)
@@ -220,15 +167,10 @@ class WeekViewModel(
     }
 
     this.dates = dates
-
-    if (dates.any { it.isEqual(getSelectedDate()) }) {
-      onSelected(this)
-    }
   }
 
   fun onDateClick(dateIndex: Int) {
     onDateClick(dates[dateIndex])
-    onSelected(this)
   }
 
   fun refreshSelection() {
