@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.map
@@ -30,11 +29,15 @@ class MainActivity : AppCompatActivity() {
     binding.viewModel = viewModel
     binding.lifecycleOwner = this
 
-    val weekPagerAdapter = WeekPagerAdapter(viewModel, this)
+    val weekPagerAdapter = WeekPagerAdapter(viewModel)
     binding.weekPager.apply {
       adapter = weekPagerAdapter
       setCurrentItem(viewModel.currentWeekPosition, false)
     }
+    viewModel.selectedDate.observe(this, Observer {
+      weekPagerAdapter.notifyItemChanged(binding.weekPager.currentItem - 1)
+      weekPagerAdapter.notifyItemChanged(binding.weekPager.currentItem + 1)
+    })
 
     binding.toolbar.apply {
       inflateMenu(R.menu.main)
@@ -47,27 +50,22 @@ class MainActivity : AppCompatActivity() {
 }
 
 class WeekPagerAdapter(
-  private val weekPagerViewModel: WeekPagerViewModel,
-  private val lifecycleOwner: LifecycleOwner
+  private val weekPagerViewModel: WeekPagerViewModel
 ) : RecyclerView.Adapter<WeekViewHolder>() {
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekViewHolder {
-    val viewModel = WeekViewModel(
-      getNow = { weekPagerViewModel.now },
-      getCurrentWeekPosition = { weekPagerViewModel.currentWeekPosition },
-      getLocale = { Locale.GERMANY },
-      onDateClick = { weekPagerViewModel.selectedDate.value = it },
-      getSelectedDate = { weekPagerViewModel.selectedDate.value }
-    )
-    weekPagerViewModel.selectedDate.observe(lifecycleOwner, Observer {
-      viewModel.refreshSelection()
-    })
     return WeekViewHolder(
       weekBinding = WeekBinding.inflate(
         LayoutInflater.from(parent.context),
         parent,
         false
       ),
-      viewModel = viewModel
+      viewModel = WeekViewModel(
+        getNow = { weekPagerViewModel.now },
+        getCurrentWeekPosition = { weekPagerViewModel.currentWeekPosition },
+        getLocale = { Locale.GERMANY },
+        onDateClick = { weekPagerViewModel.selectedDate.value = it },
+        getSelectedDate = { weekPagerViewModel.selectedDate.value }
+      )
     )
   }
 
@@ -170,15 +168,17 @@ class WeekViewModel(
   }
 
   fun onDateClick(dateIndex: Int) {
-    onDateClick(dates[dateIndex])
+    val selectedDate = dates[dateIndex]
+    onDateClick(selectedDate)
+    showSelection(selectedDate)
   }
 
-  fun refreshSelection() {
+  private fun showSelection(selectedDate: LocalDate) {
     dateViewModels.forEachIndexed { i, field ->
       field.set(
         field.get()?.run {
           val newIsSelected = when {
-            dates[i].isEqual(getSelectedDate()) -> IsSelected(value = true, hasAnimation = true)
+            dates[i].isEqual(selectedDate) -> IsSelected(value = true, hasAnimation = true)
             else -> if (isSelected.value) {
               IsSelected(value = false, hasAnimation = true)
             } else {
