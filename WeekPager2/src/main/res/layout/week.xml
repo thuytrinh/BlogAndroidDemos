@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <variable
+      name="viewModel"
+      type="thuytrinh.weekpager2.WeekViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_height="80dp">
+
+    <androidx.constraintlayout.helper.widget.Flow
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:constraint_referenced_ids="date0,date1,date2,date3,date4,date5,date6"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+      android:id="@+id/date0"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[0]}" />
+
+    <include
+      android:id="@+id/date1"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[1]}" />
+
+    <include
+      android:id="@+id/date2"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[2]}" />
+
+    <include
+      android:id="@+id/date3"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[3]}" />
+
+    <include
+      android:id="@+id/date4"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[4]}" />
+
+    <include
+      android:id="@+id/date5"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[5]}" />
+
+    <include
+      android:id="@+id/date6"
+      layout="@layout/date"
+      app:viewModel="@{viewModel.dateViewModels[6]}" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
