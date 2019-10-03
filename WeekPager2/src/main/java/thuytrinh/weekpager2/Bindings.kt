@@ -38,7 +38,12 @@ fun TextView.setIsSelected(isSelected: IsSelected) {
         start()
       }
     } else {
-      setTextColor(ContextCompat.getColor(context, android.R.color.white))
+      setTextColor(
+        ContextCompat.getColor(
+          context,
+          android.R.color.white
+        )
+      )
     }
   } else {
     if (isSelected.hasAnimation) {
@@ -52,7 +57,12 @@ fun TextView.setIsSelected(isSelected: IsSelected) {
         start()
       }
     } else {
-      setTextColor(ContextCompat.getColor(context, android.R.color.black))
+      setTextColor(
+        ContextCompat.getColor(
+          context,
+          android.R.color.black
+        )
+      )
     }
   }
 }
