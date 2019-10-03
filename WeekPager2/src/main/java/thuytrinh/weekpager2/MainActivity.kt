@@ -1,7 +1,6 @@
 package thuytrinh.weekpager2
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -141,15 +140,7 @@ class WeekViewModel(
   val dateViewModels = dateIndices.map { ObservableField<DateViewModel>() }
 
   fun setWeekPosition(weekPosition: Int) {
-    val now = getNow()
-    val currentWeekPosition = getCurrentWeekPosition()
-    val firstDayOfWeek = now
-      .plusWeeks(weekPosition.toLong() - currentWeekPosition)
-      .run {
-        val firstDayOfWeek = WeekFields.of(getLocale()).firstDayOfWeek
-        with(firstDayOfWeek)
-      }
-    val dates = dateIndices.map { firstDayOfWeek.plusDays(it) }
+    val dates = getAllDatesForThisWeek(weekPosition)
     dateViewModels.forEachIndexed { i, field ->
       field.set(
         DateViewModel(
@@ -165,6 +156,18 @@ class WeekViewModel(
     }
 
     this.dates = dates
+  }
+
+  private fun getAllDatesForThisWeek(weekPosition: Int): List<LocalDate> {
+    val now: LocalDate = getNow()
+    val currentWeekPosition = getCurrentWeekPosition()
+    val firstDayOfWeek = now
+      .plusWeeks(weekPosition.toLong() - currentWeekPosition)
+      .run {
+        val firstDayOfWeek = WeekFields.of(getLocale()).firstDayOfWeek
+        with(firstDayOfWeek)
+      }
+    return dateIndices.map { firstDayOfWeek.plusDays(it) }
   }
 
   fun onDateClick(dateIndex: Int) {
