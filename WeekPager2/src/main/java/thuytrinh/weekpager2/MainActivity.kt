@@ -161,14 +161,13 @@ class WeekViewModel(
 
   private fun getAllDatesForThisWeek(weekPosition: Int): List<LocalDate> {
     val now: LocalDate = getNow()
-    val currentWeekPosition = getCurrentWeekPosition()
-    val firstDayOfWeek = now
-      .plusWeeks(weekPosition.toLong() - currentWeekPosition)
+    val weekCountDiff = weekPosition.toLong() - getCurrentWeekPosition()
+    val firstDateOfWeek = now
+      .plusWeeks(weekCountDiff)
       .run {
-        val firstDayOfWeek = WeekFields.of(getLocale()).firstDayOfWeek
-        with(firstDayOfWeek)
+        with(WeekFields.of(getLocale()).firstDayOfWeek)
       }
-    return dateIndices.map { firstDayOfWeek.plusDays(it) }
+    return dateIndices.map { firstDateOfWeek.plusDays(it) }
   }
 
   fun onDateClick(dateIndex: Int) {
