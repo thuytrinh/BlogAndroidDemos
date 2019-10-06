@@ -1,5 +1,6 @@
 package thuytrinh.blogandroiddemos
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -97,6 +98,8 @@ fun <T> equatableDiffCallbacks(): DiffUtil.ItemCallback<T> {
       return oldItem == newItem
     }
 
+    /** It's fine to suppress this lint. */
+    @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
       return oldItem == newItem
     }

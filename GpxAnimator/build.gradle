@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
+apply plugin: "kotlin-kapt"
 
 android {
   compileSdkVersion 29
@@ -26,6 +27,14 @@ android {
       minifyEnabled false
       proguardFiles getDefaultProguardFile("proguard-android-optimize.txt")
     }
+  }
+
+  lintOptions {
+    // Temporarily ignore the following warning:
+    // Error: Invalid package reference in library;
+    // not included in Android: javax.xml.transform.stax.
+    // Referenced from io.jenetics.jpx.XML. [InvalidPackage]
+    disable "InvalidPackage"
   }
 
   dataBinding {
