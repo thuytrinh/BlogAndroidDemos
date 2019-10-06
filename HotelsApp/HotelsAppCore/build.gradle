@@ -13,23 +13,11 @@ android {
     versionName "1.0"
   }
 
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile("proguard-android-optimize.txt")
-    }
-  }
-
-  dataBinding {
-    enabled = true
-  }
+  dataBinding { enabled = true }
 }
 
 dependencies {
-  implementation project(":HotelsApp:HotelList")
-  implementation project(":HotelsApp:HotelDetails")
-  implementation project(":HotelsApp:HotelBooking")
-
+  implementation project(":HotelsApp:HotelsAppNav")
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
   implementation "androidx.appcompat:appcompat:1.1.0"
   implementation "androidx.core:core-ktx:1.1.0"

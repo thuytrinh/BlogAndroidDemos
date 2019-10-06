@@ -7,6 +7,9 @@
   <fragment
     android:id="@+id/hotelListFragment"
     android:name="thuytrinh.hotelsapp.HotelListFragment"
-    android:label="Blank"
     tools:layout="@layout/hotel_list" />
+  <fragment
+    android:id="@+id/hotelDetailsFragment"
+    android:name="thuytrinh.hotelsapp.HotelDetailsFragment"
+    tools:layout="@layout/hotel_details" />
 </navigation>
