@@ -3,3 +3,8 @@ include ":FlowUnitTestingDemo"
 include ":ListAdapterDemo"
 include ":WheelPager"
 include ":WeekPager2"
+
+include ":HotelsApp:HotelList"
+include ":HotelsApp:HotelDetails"
+include ":HotelsApp:HotelBooking"
+include ":HotelsApp:HotelsAppCore"
