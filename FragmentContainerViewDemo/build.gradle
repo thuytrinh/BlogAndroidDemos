@@ -1,0 +1,22 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+
+android {
+  compileSdkVersion 29
+
+  defaultConfig {
+    applicationId "thuytrinh.fragmentcontainerviewdemo"
+    minSdkVersion 22
+    targetSdkVersion 29
+    versionCode 1
+    versionName "1.0"
+  }
+  dataBinding { enabled = true }
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+  implementation "androidx.appcompat:appcompat:1.1.0"
+  implementation "androidx.fragment:fragment:1.2.0-beta01"
+  implementation "androidx.fragment:fragment-ktx:1.2.0-beta01"
+}
