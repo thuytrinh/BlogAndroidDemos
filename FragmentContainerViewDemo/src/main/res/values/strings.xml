@@ -1,4 +1,4 @@
 <resources>
   <string name="app_name">FragmentContainerView</string>
-  <string name="hi">Hi!</string>
+  <string name="request">Request</string>
 </resources>
