@@ -1,5 +1,6 @@
 package thuytrinh.flowunittestingdemo
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
@@ -36,5 +37,31 @@ class RegexTest {
       "([A-Z0-9]{1,6}-[0-9]{1,6})"
     )
     expectThat(pattern.toRegex().findAll("Feature/bit 1510 e mb docs").toList()).isEmpty()
+  }
+
+  /**
+   * - https://www.vogella.com/tutorials/JavaRegularExpressions/article.html
+   * - https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+   */
+  @Test
+  fun `should follow CamelCase pattern`() {
+    val regex = Regex("(([A-Z]([a-z0-9]+))+)|(buildSrc)")
+
+    // Valid cases.
+    listOf(
+      "Foo", "Bar", "FooBar", "Foobar", "Fo", "FoBa",
+      "buildSrc"
+    ).forEach {
+      assertThat(it).matches(regex.toPattern())
+    }
+
+    // Invalid cases.
+    listOf(
+      "fooBar", "foobar", "FB", "F",
+      "foo_bar", "Foo_Bar", "foo_Bar",
+      "foo-bar", "Foo-Bar"
+    ).forEach {
+      assertThat(it).doesNotMatch(regex.toPattern())
+    }
   }
 }
