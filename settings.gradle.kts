@@ -1,0 +1,7 @@
+include(":GpxAnimator")
+include(":FlowUnitTestingDemo")
+include(":ListAdapterDemo")
+include(":WheelPager")
+include(":WeekPager2")
+include(":FragmentContainerViewDemo")
+include(":LeakDemos")
