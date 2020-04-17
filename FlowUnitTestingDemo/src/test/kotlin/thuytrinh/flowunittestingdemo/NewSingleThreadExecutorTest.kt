@@ -1,4 +1,3 @@
-/** Copyright © 2019 Robert Bosch GmbH. All rights reserved. */
 package thuytrinh.flowunittestingdemo
 
 import kotlinx.coroutines.CoroutineScope
