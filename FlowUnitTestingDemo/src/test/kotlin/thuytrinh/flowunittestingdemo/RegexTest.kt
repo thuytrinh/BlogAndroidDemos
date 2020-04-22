@@ -59,7 +59,7 @@ class RegexTest {
     listOf(
       "fooBar", "foobar", "FB", "F",
       "foo_bar", "Foo_Bar", "foo_Bar",
-      "foo-bar", "Foo-Bar"
+      "foo-bar", "Foo-Bar", "FOBar"
     ).forEach {
       assertThat(it).doesNotMatch(regex.toPattern())
     }
