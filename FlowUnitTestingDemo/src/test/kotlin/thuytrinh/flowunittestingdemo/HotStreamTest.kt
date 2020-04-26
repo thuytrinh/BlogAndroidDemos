@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test
@@ -68,6 +69,23 @@ class HotStreamTest {
   }
 
   @Test
+  fun `should work with Tester`() = runBlockingTest {
+    val broadcastManager = LocalBroadcastManager()
+    val (tester, job) = broadcastManager.asFlow().testWithin(this)
+
+    broadcastManager.sendBroadcast(0)
+    tester.assertValues(0)
+
+    broadcastManager.sendBroadcast(1)
+    tester.assertValues(0, 1)
+
+    broadcastManager.sendBroadcast(2)
+    tester.assertValues(0, 1, 2)
+
+    job.cancel()
+  }
+
+  @Test
   fun `should work with ConflatedBroadcastChannel`() = runBlockingTest {
     val publisher = ConflatedBroadcastChannel(0)
     val values = mutableListOf<Int>()
@@ -114,6 +132,7 @@ fun LocalBroadcastManager.asFlow(): Flow<Intent> = callbackFlow {
   awaitClose { unregisterReceiver(receiver) }
 }
 
+/** Approach #1 */
 class TestCollector<T> {
   private val values = mutableListOf<T>()
 
@@ -124,4 +143,21 @@ class TestCollector<T> {
   fun assertValues(vararg _values: T) {
     expectThat(values).contains(_values.toList())
   }
+}
+
+/** Approach #2 */
+class Tester<T>(private val values: MutableList<T>) {
+  fun assertValues(vararg _values: T) {
+    expectThat(values).contains(_values.toList())
+  }
+}
+
+fun <T> Flow<T>.testWithin(scope: CoroutineScope): Pair<Tester<T>, Job> {
+  val values = mutableListOf<T>()
+  val tester = Tester(values)
+  val flow = this
+  val job = scope.launch {
+    flow.toList(values)
+  }
+  return Pair(tester, job)
 }
