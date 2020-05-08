@@ -1,3 +1,4 @@
+include(":NavGraphViewModelsDemo")
 include(":GpxAnimator")
 include(":FlowUnitTestingDemo")
 include(":ListAdapterDemo")
