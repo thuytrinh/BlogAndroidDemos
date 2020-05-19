@@ -1,6 +1,6 @@
 package thuytrinh.fragmentcontainerviewdemo
 
-import android.Manifest.permission
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,18 +18,13 @@ class HotelsFragment : Fragment() {
   ): View? {
     return HotelsBinding.inflate(inflater, container, false).apply {
       requestButton.setOnClickListener {
-        val launcher = prepareCall(ActivityResultContracts.RequestPermissions()) { results ->
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
           if (results.values.all { it }) {
             Toast.makeText(requireContext(), "Thanks!", Toast.LENGTH_SHORT).show()
           } else {
             Toast.makeText(requireContext(), "Oops! (ಥ﹏ಥ)", Toast.LENGTH_SHORT).show()
           }
-        }
-        launcher.launch(
-          arrayOf(
-            permission.ACCESS_COARSE_LOCATION
-          )
-        )
+        }.launch(arrayOf(ACCESS_COARSE_LOCATION))
       }
     }.root
   }
