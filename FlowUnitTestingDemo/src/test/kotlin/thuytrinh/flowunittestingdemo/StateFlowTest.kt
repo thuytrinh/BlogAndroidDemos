@@ -67,4 +67,25 @@ class StateFlowTest {
     assertThat(events).isEqualTo(expectedEvents)
     job.cancel()
   }
+
+  @Test
+  fun `MutableStateFlow only emits distinct states to collectors`() = runBlocking {
+    // Given
+    val stateFlow = MutableStateFlow(0)
+    val states = mutableListOf<Int>()
+
+    // When
+    val job = launch { stateFlow.toList(states) }
+    delay(200)
+    stateFlow.value = 1
+    delay(200)
+    stateFlow.value = 1
+    delay(200)
+    stateFlow.value = 1
+
+    // Then
+    // We'll receive only 2 states in spite of dispatching 3 times.
+    assertThat(states).containsExactly(0, 1)
+    job.cancel()
+  }
 }

@@ -16,7 +16,7 @@ import strikt.assertions.containsExactly
 
 class CoroutinesTest {
   @Test
-  fun test() {
+  fun `print thread names`() {
     println("Start calling test() on ${Thread.currentThread().name}")
     val scope = CoroutineScope(Job() + Dispatchers.Default)
     scope.launch {
