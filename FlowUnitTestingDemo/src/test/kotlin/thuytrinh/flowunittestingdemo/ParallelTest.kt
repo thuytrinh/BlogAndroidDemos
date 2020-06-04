@@ -1,6 +1,7 @@
 package thuytrinh.flowunittestingdemo
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -185,6 +186,74 @@ class ParallelTest {
     delay(4000)
 
     // Then
+    assertThat(items).isEmpty()
+  }
+
+  @Test
+  fun `items should contain 0 and 1 even though the job was canceled`() = runBlocking<Unit> {
+    // Given
+    val items = CopyOnWriteArrayList<Int>()
+    lateinit var jobA: Job
+    lateinit var jobB: Job
+
+    // When
+    val syncScope = this
+    val syncJob = launch {
+      // This job won't be canceled when syncJob is canceled.
+      jobA = syncScope.launch {
+        delay(2000)
+        println("Done A")
+        items.add(0)
+      }
+
+      // This job won't be canceled when syncJob is canceled.
+      jobB = syncScope.launch {
+        delay(2000)
+        println("Done B")
+        items.add(1)
+      }
+    }
+    delay(1000) // Wait for the launch.
+    syncJob.cancel()
+
+    // Then
+    assertThat(jobA.isActive).isTrue()
+    assertThat(jobB.isActive).isTrue()
+    delay(4000) // Wait till both jobA and jobB complete.
+    assertThat(items).containsAll(listOf(0, 1))
+  }
+
+  @Test
+  fun `items should be empty due to job cancellation`() = runBlocking<Unit> {
+    // Given
+    val items = CopyOnWriteArrayList<Int>()
+    lateinit var jobA: Job
+    lateinit var jobB: Job
+
+    // When
+    val syncScope = this
+    val syncJob = syncScope.launch {
+      // The `this` is different from `syncScope`.
+      jobA = this.launch {
+        delay(2000)
+        println("Done A")
+        items.add(0)
+      }
+
+      // The `this` is different from `syncScope`.
+      jobB = this.launch {
+        delay(2000)
+        println("Done B")
+        items.add(1)
+      }
+    }
+    delay(1000) // Wait for the launch.
+    syncJob.cancel()
+
+    // Then
+    assertThat(jobA.isActive).isFalse()
+    assertThat(jobB.isActive).isFalse()
+    delay(4000) // Wait till both jobA and jobB complete.
     assertThat(items).isEmpty()
   }
 }
