@@ -171,12 +171,12 @@ class ParallelTest {
         async {
           delay(2000)
           println("Done A")
-          items.add(0)
+          items.add(0) // Should never reach this due to job cancellation.
         },
         async {
           delay(2000)
           println("Done B")
-          items.add(1)
+          items.add(1) // Should never reach this due to job cancellation.
         }
       ).awaitAll()
     }
