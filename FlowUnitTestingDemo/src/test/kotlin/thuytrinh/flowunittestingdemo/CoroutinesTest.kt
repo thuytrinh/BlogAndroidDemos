@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withContext
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
+import kotlin.system.measureTimeMillis
 
 class CoroutinesTest {
   @Test
@@ -44,5 +46,24 @@ class CoroutinesTest {
     // Then
     expectThat(events).containsExactly(0)
     job.cancel()
+  }
+
+  @Test
+  fun `should not actually delay with runBlockingTest`() = runBlockingTest {
+    // Given
+    val delayMillis = 10_000L
+
+    // When
+    val timeMillis = measureTimeMillis {
+      val job = launch {
+        delay(delayMillis)
+        println("Hi!")
+      }
+      job.join()
+    }
+
+    // Then
+    println("timeMillis: $timeMillis")
+    assertThat(timeMillis).isLessThan(delayMillis)
   }
 }
