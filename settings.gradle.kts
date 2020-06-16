@@ -1,3 +1,4 @@
+include(":DialogPlayground")
 include(":NavGraphViewModelsDemo")
 include(":GpxAnimator")
 include(":FlowUnitTestingDemo")
