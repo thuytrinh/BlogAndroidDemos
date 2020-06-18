@@ -1,3 +1,4 @@
+include(":RecyclerViewPlayground")
 include(":DialogPlayground")
 include(":NavGraphViewModelsDemo")
 include(":GpxAnimator")
